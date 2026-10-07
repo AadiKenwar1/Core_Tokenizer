@@ -49,7 +49,7 @@ class Tokenizer:
                     break
 
     #Gets the current token
-    def getToken(self) -> tuple[int,int]:
+    def getToken(self) -> int:
         return self._tokens[self._cursor][0]
 
     #Moves cursor to next token

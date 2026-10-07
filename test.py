@@ -22,7 +22,7 @@ assert t._tokens == [(32, "AB12321"), (32, "FKSJ"), (32, "A12")], t._tokens
 print("Identifiers Test Passed")
 
 #All 4 tokens test
-t = Tokenizer("test_files/combinedTest.txt")
+t = Tokenizer("test_files/graderTest.txt")
 assert t._tokens == [(1, "program"), (4, "int"), (32, "X"), (12, ";"), (2, "begin"),
             (32, "X"), (14, "="), (31, "25"), (12, ";"), (11, "write"),
             (32, "X"), (12, ";"), (3, "end")]

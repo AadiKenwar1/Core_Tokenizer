@@ -1,0 +1,28 @@
+program
+  int X, Y, Z;
+  int COUNT, MAX;
+begin
+  read X, Y;
+  Z = 0;
+  COUNT = 10;
+  MAX = 100;
+
+  while (COUNT > 0) loop
+    if [ (X <= Y) && !(X == Y) ] then
+      Z = Z + X * 2;
+    else
+      Z = Z - (Y - X);
+    end;
+    COUNT = COUNT - 1;
+  end;
+
+  if [ (Z != 0) || (Z >= MAX) ] then
+    write Z;
+  else
+    write X, Y;
+  end;
+
+  if (Z < MAX) then
+    write COUNT;
+  end;
+end
