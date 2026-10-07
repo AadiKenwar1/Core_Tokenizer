@@ -1,0 +1,146 @@
+==================== PAGE 1 ====================
+CSE 3341, Core Tokenizer Project
+Due: 11:59 pm, Oct. 7, '26
+50 points
+Goal: The goal of this part of the project is to implement, in Java or Python, a Tokenizer for the Core
+language. Although it is called a tokenizer, as we saw in class, what you will implement is a scanner which
+will read one line at a time from the input file, tokenize that line, and make those tokens available via the
+methods listed below. Once those tokens have all been consumed, the Tokenizer/Scanner will read the next
+line, tokenize that line, etc.
+The methods that the Tokenizer/Scanner should provide are dictated by the needs of the Parser, in particular
+the One-Token-Look-Ahead (OTLA) approach used by the Parser. OTLA means that there are times when
+some method in the parser needs to know what the next token is although it is not yet ready to "consume"
+it. In these situations, if the next token is an identifier, we do not need to know the name of the identifier,
+only the fact that the next token is an identifier. Similarly, if the next token is an integer, we do not need
+to know the actual value of the integer, only the fact that the next token is an integer. But when the Parser
+is ready to consume the identifier or the integer token, it will need the name of the particular identifier or
+the value of the particular integer. The methods listed below, to be implemented in your Tokenizer/Scanner
+class, are designed to account for these factors. In addition, they are designed so that the grader can easily
+grade your implementation. Of course, in addition to these methods which constitute the interface of the
+Tokenizer/Scanner class, you may always implement any private methods you want inside the class.
+The set of legal tokens of Core are:
+- Reserved words (11 reserved words):
+program, begin, end, int, if, then, else, while, loop, read, write
+- Special symbols (19 special symbols):
+; , = ! [ ] && || ( ) + - * != == < > <= >=
+- Integers (unsigned)
+- Identifiers: start with uppercase letter, followed by zero or more uppercase letters and zero or more
+digits. Note that something like " ABCend" is illegal as an id because of the lowercase letters; and it
+is not two tokens because of lack of whitespace. But ABC123 and A1B2C3 are both legal.
+- White space requirement: White space, i.e., one or more blanks or tab characters or carriage returns,
+is required between each pair of tokens unless one or both of them is/are special symbols. If one or
+both of them is/are special symbols. white space is optional. You should not treat white space as a
+regular token.
+As we discussed in class, we will number these tokens 1 through 11 for the reserved words, 12 through
+30 for the special symbols, 31 for integer, and 32 for identifier. Note that 31 just tells us that the token in
+question is an integer, not the actual value of the integer. Similarly, 32 just tells us that the particular token
+is an identifier, not the name of the identifier.
+1
+==================== PAGE 2 ====================
+We will also use two additional numbers, 33 and 34, to indicate not actual tokens but situations that the
+Tokenizer/Scanner has to deal with. We will use 33 to indicate that the Tokenizer/Scanner is at the end-of-
+file so there are no more tokens. And 34 will indicate that it came across a string of characters in the input
+stream that is not a legal token, in other words, an error token. The Tokenizer/Scanner's interface should
+consist of the following (public) methods:
+- Constructor(): The constructor should receive, as parameter, the name of the input file that
+contains the string of characters to be tokenized. The constructor should start by appropriately instan-
+tiating a buffered reader (if you are using Java) corresponding to that file in the usual manner. (The
+name of the input file will be a command-line argument for your program.)
+The constructor should then call a private method tokenizeLine(). This method will read a
+line from the input file and convert the sequence of characters in that line into a sequence of Core
+tokens and save them in a private data structure, possibly an array. It should then set a cursor index
+that points to the first token in that structure. It may be useful to include, in the same structure, the
+string of characters making up each token since you will need that for the case of integer tokens and
+identifier tokens. But these details are private to the Tokenizer/Scanner class and you may choose any
+alternative approaches that you prefer.
+If a line that tokenizeLine() reads consists entirely of white space characters, it should skip that
+line and read the next line skipping as many lines as necessary to get to a non-empty line. If the
+line contains a string of characters that is not a valid token, tokenizeLine() should still tokenize
+up to that point with the next number in its private data structure being 34 to indicate illegal token.
+tokenizeLine() also has to take account of greedy tokenizing. But you may want to complete
+a version that does not include greedy tokenizing; and once you get that working, tweak it to add
+greedy tokenizing. Note that you should not read the entire file and tokenize everything in one step;
+you should work with one line at a time and that is the idea of tokenizeLine().
+- int getToken() : This returns a number between 1 and 32 if the current token is a proper Core
+token; 33 if the Tokenizer is at the end of the file and there are no more tokens; 34 if the Tokenizer
+comes across a string that is not a legal token. Note that getToken() does not move the "cursor"
+forward. So repeated calls to getToken() will return the same value. To move past the current
+token, you have to call skipToken().
+- void skipToken() : This method moves the "token cursor" to the next token (but does not return
+anything). If there are no more tokens in the current line, skipToken() calls tokenizeLine()
+which will read the next line from the input file and convert the sequence of characters in that line into
+a sequence of Core tokens and save them in the Tokenizer's data structure and set the cursor index to
+point to the first token and return.
+If, when skipToken() is called, the current token is 33, i.e., we are already at the end-of-file, the
+cursor is not moved since there are no more lines or tokens to read. Similarly, if the current token is
+34, i.e., we have an illegal token, the cursor is not moved since we do not go past an illlegal token.
+- int intVal() : If getToken() returns 31 to indicate that the current token is an integer, we may
+call intVal() to get the value of that integer. If we call intVal() when the current token is not
+an integer, it will print an error message and the program will terminate.
+2
+==================== PAGE 3 ====================
+- string idName() : If getToken() returns 32 to indicate that the current token is an identifier,
+we may call idName() to get the name of that identifier. If we call idName() when the current to-
+ken is not an identifier, it will print an error message and the program will terminate. BothintVal()
+and idName() will make use of the string of characters making up the particular token. In the case
+of intVal(), you may use the standard Java/Python library functions to convert the string into an
+integer.
+- Using the DFA: Where does the DFA for Core tokens enter the picture? Standard tokenizers use a
+table-driven approach in which the DFA, including all the transitions, indications of which states are
+accepting final states and what tokens they correspond to, etc., are represented in the table. Greedy
+tokenizing is also represented in the table. The Tokenizer itself is written as a driver program that
+uses the table to decide what to do when it is in any particular state and for any given character that
+might be next on the input stream.
+We won't have time to discuss the table-driven approach but the Scott book contains a good descrip-
+tion. It also includes pseudo-code corresponding to the approach. You can simply convert the book's
+pseudo-code into Python or Java, depending on which one you are using. You would have to come up
+with the table corresponding to your DFA for Core.
+You may want to read Scott's description before deciding whether to follow that approach in your
+implementation or do it some other way. If you decide not to follow the table-driven approach, the
+DFA won't directly appear in your code but it should help you write the code for your tokenizer. In
+effect, the structure of the body of the main loop of tokenizeLine() will reflect the structure of
+the DFA.
+Your main() function should receive the name of the input file as a command line argument. It should then
+call the constructor of the Tokenizer/Scanner class, passing that name as an argument.main() should then
+repeatedly call getToken(), print the returned token number, and call skipToken() until, after some
+number of iterations, getToken() returns 33 to indicate end-of-file or 34 to indicate invalid token. In
+either case, it should print an appropriate message and terminate. main() should print each token number
+on a separate line. Note that main() for this lab never calls intVal() or idName(). These methods
+will be used in the parser.
+Suppose the input file contains the following Core program:
+program int X; begin X=25; write X; end
+your main() function should produce the following sequence of numbers:
+1 4 32 12 2 32 . . . 33
+corresponding to the tokens, "program", "int", "X", ";", "begin", "X", . . . ,EOF, but with each number
+being on a separate line.
+Note that, although the example above is a legal Core program, the Tokenizer should not worry about
+whether the input stream is a legal Core program or not. That will be the job of the parser. All that your
+Tokenizer should care about is that each token in the input stream is a legal token. Of course, if the Tokenizer
+comes across an illegal token in the input stream, as described above, it should print an appropriate error
+message and stop. It should not try to continue beyond that point.
+Additional Notes:
+1. The tokens must be read line-by-line and printed. You should not read the entire stream of tokens in
+3
+==================== PAGE 4 ====================
+one fell-swoop before starting to print them. If there is an error in reading a token, such as a misspelled
+keyword, all the tokens prior to that token must be printed out before the error message for the bad
+token is printed. Then the Tokenizer must terminate.
+2. You may use either Java or Python. Do NOT use any other language. Do NOT use the Tokenizer
+libraries of those languages or others that you may find online. Do NOT use any regular expression
+package that may be available either as part of the standard libraries or that you might come across
+online.
+3. Submit a .zip file on Carmen that includes the following:
+- A plain text file named README that specifies the names of all the files you are submitting and a
+brief (1-line) description of each saying what the file contains; plus, instructions to the grader on
+how to run your program; and any special points to remember during compilation or execution.
+If the grader has problems with compiling or executing your program, he will e-mail youat your
+OSU e-mail address; you must respond within 48 hours to resolve the problem. If you do not,
+he will assume that your program does not, in fact, compile/execute properly.
+- Your source files and makefiles (if any). DO NOT include object files.
+- A documentation file (also a plain text file). This file should include at least the following: A
+description of the overall design of the tokenizer, in particular, of the Tokenizer/Scanner
+class; a brief "user manual" that explains how to use the Tokenizer; and a brief description of
+how you tested the Tokenizer and a list of known remaining bugs (if any) and missing features
+(if any).
+If you notice any problems in the above or if you have questions or comments, please post on Piazza.
+4
