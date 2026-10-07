@@ -1,0 +1,72 @@
+CSE 3341 - Core Tokenizer/Scanner (Project 1)
+Author: Aadi Kenwar
+
+DESIGN
+
+At a high level, the logic is split into four files:
+main.py                 - Main file. Takes an input file name from the command line and prints each token number.
+tokenizer.py            - The Tokenizer class (constructor, getToken, skipToken, intVal, idName) and its private helper methods.
+tokens.py               - Dictionaries for the reserved words (1-11) and special symbols (12-30).
+test.py                 - Unit tests that check the Tokenizer against small input files.
+
+The Tokenizer class has three private attributes:
+_file   - holds the file being read
+_tokens - holds the tokens from the most recent line read
+_cursor - holds the index of the token we are currently looking at
+
+The private methods of this class are:
+_tokenizeLine(self)                - tokenizes a single line
+_readReserved(self, line, index)   - reads a reserved word token and appends it
+_readSymbol(self, line, index)     - reads a special symbol token and appends it
+_readInteger(self, line, index)    - reads an integer token and appends it
+_readIdentifier(self, line, index) - reads an identifier token and appends it
+
+_tokenizeLine() is the main function. The read functions are its helpers. The logic works
+like a simple state machine: the first character decides the token type (lowercase letter
+for reserved words, symbol for special symbols, digit for integers, uppercase letter for
+identifiers). Each read method is then greedy, grabbing as many characters as it can before the
+token would become invalid.
+
+The public methods of this class are:
+- getToken  - returns the number of the current token
+- skipToken - moves the cursor to the next token or line
+- intVal    - returns the int value of the current token
+- idName    - returns the name of the current token
+
+USER MANUAL
+
+HOW TO RUN
+    python main.py <input_file>
+
+Example:
+    python main.py test_files/sample1.txt
+
+TESTING
+
+Tests were written as the project was built, starting with single token types and ending
+with full Core programs.
+
+TEST FILES
+test_files/reservedTest.txt     - Input with only reserved words
+test_files/integerTest.txt      - Input with only integers
+test_files/symbolTest.txt       - Input with only special symbols
+test_files/identifierTest.txt   - Input with only identifiers
+test_files/graderTest.txt       - Short Core program mixing all four token kinds
+test_files/sample1.txt          - Sample Core program 1
+test_files/sample1_expected.txt - Expected token output for sample1.txt
+test_files/sample2.txt          - Sample Core program 2
+test_files/sample2_expected.txt - Expected token output for sample2.txt
+test_files/sample3.txt          - Sample Core program 3
+test_files/sample3_expected.txt - Expected token output for sample3.txt
+
+HOW TO RUN THE ENTIRE TEST SUITE
+    python test.py
+
+Each test prints whether it passed. A failed test stops the test suite with an AssertionError.
+
+KNOWN BUGS AND MISSING FEATURES
+
+None known.
+
+NOTES
+- Written in Python. Requires Python 3.9 or newer.
